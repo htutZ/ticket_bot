@@ -6,11 +6,9 @@ from urllib.parse import urlparse
 from psycopg2.extras import RealDictCursor
 import logging
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Connection pool setup
 connection_pool = None
 
 def init_pool():
@@ -68,7 +66,6 @@ def init_db():
         conn = get_conn()
         cursor = conn.cursor()
         
-        # Create tables with error handling
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS tickets (
                 id SERIAL PRIMARY KEY,
@@ -90,7 +87,6 @@ def init_db():
             )
         """)
         
-        # Create indexes
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_ticket_status 
             ON tickets(status)
