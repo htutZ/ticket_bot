@@ -38,7 +38,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send welcome message"""
     if not is_allowed(update.effective_user):
         return
-    await update.message.reply_text("Welcome to the Ticket Bot!")
+    await update.message.reply_text("Welcome to htut's ticket bot!")
 
 async def getid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Get user ID"""
