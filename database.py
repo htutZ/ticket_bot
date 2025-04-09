@@ -6,20 +6,15 @@ from urllib.parse import urlparse
 DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("PG_URL") 
 
 def get_conn():
-    db_url = os.getenv("DATABASE_URL") or os.getenv("PG_URL")
-    
+    db_url = os.getenv("DATABASE_URL")
     if not db_url:
-        raise ValueError("No database URL found in environment variables")
+        raise ValueError("DATABASE_URL environment variable not set")
     
-    url = urlparse(db_url)
-    conn = psycopg2.connect(
-        database=url.path[1:], 
-        password=url.password,
-        host=url.hostname,
-        port=url.port,
-        sslmode="require"
-    )
-    return conn
+    # Ensure the URL uses the external domain
+    if "railway.internal" in db_url:
+        db_url = db_url.replace("railway.internal", "railway.app")
+    
+    return psycopg2.connect(db_url, sslmode="require")
 
 def init_db():
     """Initialize database tables"""
