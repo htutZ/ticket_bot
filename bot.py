@@ -5,7 +5,7 @@ from telegram.ext import (
     CallbackQueryHandler, ContextTypes, ConversationHandler
 )
 from config import BOT_TOKEN, ALLOWED_USERS, ALLOWED_USERNAMES, ISSUE_COLLECTOR_ID
-from database import get_ticket_updates, init_db, add_ticket, get_open_tickets, get_ticket, mark_ticket_resolved, add_ticket_update
+from database import get_ticket_updates, init_db, add_ticket, get_open_tickets, get_ticket, mark_ticket_resolved, add_ticket_update, init_pool
 
 logging.basicConfig(level=logging.INFO)
 
@@ -170,8 +170,8 @@ async def update_ticket_text(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 # Main
 def main():
+    init_pool()
     print("🚀 main() is running...")
-    init_db()
 
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     update_conv_handler = ConversationHandler(
