@@ -126,17 +126,24 @@ def add_ticket(description, photo_file_id=None):
     return ticket_id
 
 def get_open_tickets():
-    conn = get_conn()
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT id, description, photo_file_id 
-        FROM tickets 
-        WHERE status = 'open'
-        ORDER BY created_at DESC
-    """)
-    tickets = cursor.fetchall()
-    conn.close()
-    return tickets
+    conn = None
+    try:
+        conn = get_conn()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, description, photo_file_id 
+            FROM tickets 
+            WHERE status = 'open'
+            ORDER BY created_at DESC
+        """)
+        # Return as dictionaries for safer access
+        return cursor.fetchall()
+    except Exception as e:
+        logger.error(f"Error fetching open tickets: {e}")
+        return []
+    finally:
+        if conn:
+            return_conn(conn)
 
 def get_ticket(ticket_id):
     conn = get_conn()

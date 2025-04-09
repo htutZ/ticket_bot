@@ -1,4 +1,5 @@
 import logging
+from venv import logger
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
@@ -83,16 +84,27 @@ async def tickets(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_allowed(update.effective_user):
         return
 
-    tickets = get_open_tickets()
-    if not tickets:
-        await update.message.reply_text("Today is quiet! No open tickets!")
-        return
+    try:
+        tickets = get_open_tickets()
+        if not tickets:
+            await update.message.reply_text("No open tickets found!")
+            return
 
-    keyboard = [
-        [InlineKeyboardButton(f"🎫 Ticket {t[0]}", callback_data=f"ticket_{t[0]}")]
-        for t in tickets
-    ]
-    await update.message.reply_text("📋 Open Tickets:", reply_markup=InlineKeyboardMarkup(keyboard))
+        keyboard = []
+        for ticket in tickets:
+            # Safely access ticket ID - adjust based on your actual tuple structure
+            ticket_id = ticket['id'] if isinstance(ticket, dict) else ticket[0]
+            keyboard.append(
+                [InlineKeyboardButton(f"🎫 Ticket {ticket_id}", callback_data=f"ticket_{ticket_id}")]
+            )
+
+        await update.message.reply_text(
+            "📋 Open Tickets:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+    except Exception as e:
+        logger.error(f"Error in /tickets command: {e}")
+        await update.message.reply_text("⚠️ Error fetching tickets. Please try again.")
 
 # Ticket Viewer
 async def ticket_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
