@@ -167,8 +167,15 @@ async def ticket_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 for update in updates:
                     update_text = update['update_text'] if isinstance(update, dict) else update[0]
                     username = update['username'] if isinstance(update, dict) else update[1]
-                    timestamp = update['created_at'] if isinstance(update, dict) else update[2]
-                    time_part = timestamp.split()[1][:5] if timestamp else ""
+                    created_at = update['created_at'] if isinstance(update, dict) else update[2]
+                    
+                    # Convert datetime to string if needed
+                    if hasattr(created_at, 'strftime'):
+                        timestamp = created_at.strftime("%Y-%m-%d %H:%M:%S")
+                    else:
+                        timestamp = str(created_at)
+                    
+                    time_part = timestamp.split()[1][:5]  # Extract just the time (HH:MM)
                     text += f"\n\n{time_part} - {username}:\n{update_text}"
 
             # Prepare buttons
