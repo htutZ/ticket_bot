@@ -6,8 +6,19 @@ from urllib.parse import urlparse
 DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("PG_URL") 
 
 def get_conn():
-    """Establish connection to PostgreSQL"""
-    conn = psycopg2.connect(DATABASE_URL, sslmode="require")
+    db_url = os.getenv("DATABASE_URL") or os.getenv("PG_URL")
+    
+    if not db_url:
+        raise ValueError("No database URL found in environment variables")
+    
+    url = urlparse(db_url)
+    conn = psycopg2.connect(
+        database=url.path[1:], 
+        password=url.password,
+        host=url.hostname,
+        port=url.port,
+        sslmode="require"
+    )
     return conn
 
 def init_db():
