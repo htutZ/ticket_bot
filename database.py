@@ -3,7 +3,7 @@ import psycopg2
 from psycopg2 import sql
 from urllib.parse import urlparse
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("PG_URL") 
 
 def get_conn():
     """Establish connection to PostgreSQL"""
